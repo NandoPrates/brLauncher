@@ -37,11 +37,30 @@ namespace brLauncher
             Settings.Default.user_pass = Settings.Default.userpass_remember ? this.txtUser_Pass.Text : string.Empty;
             Settings.Default.Save();
 
+            this.Hide();
+
             // Inicializa o hexed do usuário com as informações de usuário e senha.
             Process prc = new Process();
+            prc.EnableRaisingEvents = true;
+            prc.Exited += prc_Exited;
             prc.StartInfo.FileName = Settings.Default.hexedFile;
             prc.StartInfo.Arguments = String.Format("-t:{0} {1} 1rag1", user_pass, userid);
             prc.Start();
+        }
+
+        /// <summary>
+        /// Executa quando o processo do hexed é finalizado.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void prc_Exited(object sender, EventArgs e)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.Show();
+                this.BringToFront();
+                this.Focus();
+            });
         }
 
         #region Faz a janela se arrastar ao clicar
@@ -56,6 +75,11 @@ namespace brLauncher
         private const int HT_CLIENT = 0x1;
         private const int HT_CAPTION = 0x2;
         #endregion
+
+        private void Launcher_Load(object sender, EventArgs e)
+        {
+
+        }
 
     }
 }
